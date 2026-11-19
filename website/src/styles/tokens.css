@@ -1,0 +1,67 @@
+/* Self-hosted brand fonts. No third-party font hosts. */
+@font-face {
+  font-family: 'Kibet Serif Display';
+  src: url('/fonts/KibetSerifDisplay-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kibet Serif Display';
+  src: url('/fonts/KibetSerifDisplay-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kibet Serif';
+  src: url('/fonts/KibetSerif-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Kibet Serif';
+  src: url('/fonts/KibetSerif-Italic.woff2') format('woff2');
+  font-weight: 400;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  /* Colours */
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-accent: #e30613;
+  --color-grey-900: #3f3f3f;
+  --color-grey-700: #5e5e5e;
+  --color-grey-400: #c8c8c8;
+  --color-grey-300: #d4d4d4;
+  --color-grey-200: #e5e5e5;
+  --color-placeholder: #ecebe8;
+  --color-placeholder-alt: #e9e8e4;
+  --color-shirt-dark: #151515;
+  --color-shirt-dark-alt: #1c1c1c;
+
+  /* Font stacks */
+  --font-sans: 'Inter Variable', Inter, 'Helvetica Neue', Arial, sans-serif;
+  --font-serif: 'Kibet Serif', Georgia, serif;
+  --font-display: 'Kibet Serif Display', Georgia, serif;
+
+  /* Base text */
+  --text-base-size: 12px;
+  --text-base-tracking: 0.02em;
+
+  /* Small uppercase label */
+  --label-size: 11px;
+  --label-tracking: 0.06em;
+
+  /* Layout */
+  --gutter: clamp(16px, 2.2vw, 32px);
+}
+
+.label {
+  font-size: var(--label-size);
+  letter-spacing: var(--label-tracking);
+  text-transform: uppercase;
+}

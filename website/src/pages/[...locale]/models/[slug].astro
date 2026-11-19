@@ -1,0 +1,77 @@
+---
+/*
+ * Model pages: /models/<slug>/ in English and /<locale>/models/<slug>/ in the
+ * other locales, from one file (see the routing note in ../index.astro).
+ * Body: src/components/model/ModelProduct.astro; previous / next design
+ * links below it.
+ */
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import ModelProduct from '../../../components/model/ModelProduct.astro';
+import { LOCALES, type Locale } from '../../../i18n/locales.ts';
+import { localeParam } from '../../../i18n/paths.ts';
+import { localized, useTranslations } from '../../../i18n/ui.ts';
+import {
+  MODELS,
+  modelNeighbours,
+  modelPath,
+  type Model,
+} from '../../../data/models.ts';
+
+export function getStaticPaths() {
+  return LOCALES.flatMap((locale) =>
+    MODELS.map((model) => ({
+      params: { locale: localeParam(locale), slug: model.slug },
+      props: { locale, model },
+    })),
+  );
+}
+
+interface Props {
+  locale: Locale;
+  model: Model;
+}
+
+const { locale, model } = Astro.props;
+const t = useTranslations(locale);
+const description = localized(model.description, locale);
+const { prev, next } = modelNeighbours(model);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t('meta.model.title', { title: model.title })}
+  description={description}
+>
+  <ModelProduct locale={locale} model={model} />
+
+  <nav
+    class="others label"
+    slot="after-main"
+    aria-label={t('model.otherModels')}
+  >
+    <a href={modelPath(prev.slug, locale)}>
+      <span aria-hidden="true">← </span>
+      <span lang={prev.titleLang}>{prev.title}</span>
+    </a>
+    <a href={modelPath(next.slug, locale)}>
+      <span lang={next.titleLang}>{next.title}</span>
+      <span aria-hidden="true"> →</span>
+    </a>
+  </nav>
+</BaseLayout>
+
+<style>
+  .others {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    /* 44px-tall links; together as tall as the mockup's 22px padding. */
+    padding: 8px var(--gutter);
+    border-top: 1px solid var(--color-grey-200);
+  }
+  .others a {
+    display: inline-block;
+    min-width: 44px;
+    padding: 14px 0;
+  }
+</style>

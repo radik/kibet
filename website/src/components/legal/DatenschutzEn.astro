@@ -1,0 +1,298 @@
+---
+/*
+ * Privacy policy, English courtesy translation of DatenschutzDe.astro
+ * (binding). Operator, supervisory authority and Umami settings come from
+ * src/data/legal.ts.
+ */
+import OperatorAddress from './OperatorAddress.astro';
+import {
+  ANALYTICS,
+  OPERATOR,
+  SUPERVISORY_AUTHORITY as authority,
+} from '../../data/legal.ts';
+import { CONSENT_STRINGS } from '../../i18n/consent.ts';
+import { CONSENT_STORAGE_KEY } from '../../scripts/consent.ts';
+
+const mailto = `mailto:${OPERATOR.email}`;
+const cloudflarePrivacy = 'https://www.cloudflare.com/privacypolicy/';
+const umamiPrivacy = 'https://umami.is/privacy';
+const daily = ANALYTICS.idRotation === 'daily';
+const saltChange = daily ? 'every day' : 'at the start of every calendar month';
+const idPeriod = daily ? 'one day' : 'one calendar month';
+const retention = `${ANALYTICS.retentionMonths} months`;
+const settings = `“${CONSENT_STRINGS.en.settings}”`;
+const decline = `“${CONSENT_STRINGS.en.decline}”`;
+const consentKey = `“${CONSENT_STORAGE_KEY}”`;
+---
+
+<h2>1. Controller</h2>
+<p>
+  The controller responsible for processing personal data on this website within
+  the meaning of the General Data Protection Regulation (GDPR) is:
+</p>
+<OperatorAddress language="en" />
+<p>
+  Email: <a href={mailto}>{OPERATOR.email}</a>
+</p>
+
+<h2>2. Summary</h2>
+<ul>
+  <li>
+    This website sets no cookies. There is no contact form, no newsletter and no
+    user accounts.
+  </li>
+  <li>
+    We use Cloudflare to deliver the website. We compile visitor statistics with
+    Umami Cloud only if you consent via the banner on the website; you can
+    change your decision at any time under {settings} in the footer of the
+    website. Both services process your IP address; it is not stored in the
+    statistics.
+  </li>
+  <li>
+    The designs you mark with “Want” are stored only in your browser, as is your
+    decision on visitor statistics.
+  </li>
+  <li>
+    The fonts are delivered with the website. We do not embed content from other
+    providers such as videos, maps or social media plugins.
+  </li>
+</ul>
+
+<h2>3. Delivery of the website via Cloudflare</h2>
+<p>
+  This website is delivered through the Cloudflare network (Cloudflare Workers
+  and content delivery network). The provider is Cloudflare, Inc., 101 Townsend
+  St., San Francisco, CA 94107, USA.
+</p>
+<p>
+  Each time you open a page, your browser sends technically necessary data to
+  Cloudflare’s servers. This includes in particular:
+</p>
+<ul>
+  <li>your IP address,</li>
+  <li>the date and time of the request,</li>
+  <li>the requested address (URL) and the amount of data transferred,</li>
+  <li>the referrer, i.e. the page you came from, if your browser sends it,</li>
+  <li>
+    the information your browser sends about browser type and version, operating
+    system and language setting,
+  </li>
+  <li>technical connection data such as protocol and status code.</li>
+</ul>
+<p>
+  The data is processed to deliver the website, to keep it stable and secure and
+  to fend off attacks. The legal basis is Art.&nbsp;6(1)(f) GDPR; our legitimate
+  interest is the secure and reliable provision of the website. Only the
+  information your browser sends with every request anyway is processed.
+</p>
+<p>
+  Cloudflare processes this data on our behalf under a data processing agreement
+  (Art.&nbsp;28 GDPR). Processing may take place in the USA and in other
+  countries where Cloudflare operates data centres. Cloudflare is certified
+  under the EU-US Data Privacy Framework; transfers to the USA are therefore
+  based on the European Commission’s adequacy decision of 10&nbsp;July 2023
+  (Art.&nbsp;45 GDPR). For other transfers to third countries, Cloudflare has
+  agreed to the EU standard contractual clauses (Art.&nbsp;46(2)(c) GDPR).
+</p>
+<p>
+  Cloudflare keeps this data only as long as necessary for these purposes. For
+  more information, see
+  <a href={cloudflarePrivacy}>Cloudflare’s privacy policy</a>.
+</p>
+
+<h2>4. Visitor statistics with Umami Cloud</h2>
+<p>
+  To understand which pages and designs people are interested in, we use the
+  analytics service Umami Cloud. The provider is Umami Software, Inc., 28 Geary
+  St, Suite 650 #243, San Francisco, California, USA.
+</p>
+<p>
+  Only if you have consented does your browser, when you open a page, load the
+  Umami script from cloud.umami.is and then send usage data to gateway.umami.is.
+  Without your consent, no connection to Umami is made. The following is
+  processed:
+</p>
+<ul>
+  <li>the page you open (address and page title) and the time,</li>
+  <li>the referrer, i.e. the page you came from, if your browser sends it,</li>
+  <li>
+    browser, operating system and device type, screen size and language setting,
+  </li>
+  <li>
+    your approximate location (country, region, city), which Umami derives from
+    your IP address,
+  </li>
+  <li>
+    when you click “Want” on a design or remove the mark again: which design is
+    concerned, which options were selected, for example shirt colour or footnote
+    language, and where on the website you clicked. Marks made before you
+    consented are not transmitted retroactively.
+  </li>
+</ul>
+<p>
+  Your IP address is processed only briefly, to answer the request, determine
+  the approximate location and calculate a visitor identifier; it is not stored
+  in the statistics. Umami’s infrastructure providers may keep it for a limited
+  time in operational and security logs. The visitor identifier is a hash of the
+  IP address, the browser identification (user agent), our website’s ID and a
+  secret value that Umami changes {saltChange}. It allows page views within
+  {idPeriod} to be grouped; after that a new identifier is created and earlier
+  page views can no longer be linked to it. Umami sets no cookies and does not
+  track you across other websites.
+</p>
+<p>
+  The script stores no information on your device. When it loads, it reads
+  information your browser makes available to websites (screen size, language
+  setting, address and title of the page) and checks whether the entry
+  “umami.disabled”, which switches the measurement off, is set in your browser.
+</p>
+<p>
+  We use the statistics to learn how the website is used and which designs
+  people like, and to decide which designs to produce. We chose a method that
+  works without cookies, without storing IP addresses and without cross-site
+  identifiers. The legal basis is your consent: Art.&nbsp;6(1)(a) GDPR for the
+  processing of your data and §&nbsp;25(1) of the German Telecommunications
+  Digital Services Data Protection Act (TDDDG) for reading information from your
+  device.
+</p>
+<p>
+  You give your consent via the banner that appears on your first visit to the
+  website. It is voluntary; if you decline, you can use the website without any
+  restrictions. You can withdraw your consent at any time with effect for the
+  future (Art.&nbsp;7(3) GDPR) by choosing {settings} in the footer of the
+  website and clicking {decline}. From then on your browser sends no more data
+  to Umami. Withdrawal does not affect the lawfulness of processing carried out
+  before it.
+</p>
+<p>
+  So that we do not ask you again on every page, the website stores your
+  decision in your browser’s local storage under the entry {consentKey}: whether
+  you accepted or declined, and when. The entry is not transmitted to us or to
+  anyone else and stays stored until you change your decision or delete the data
+  this website has stored in your browser. If local storage is unavailable, your
+  decision applies only to the page currently open. This storage is strictly
+  necessary for the website to respect your decision and therefore permitted
+  without consent under §&nbsp;25(2) no.&nbsp;2 TDDDG. To the extent that
+  personal data is processed, the legal basis is Art.&nbsp;6(1)(f) GDPR; our
+  legitimate interest is to respect your decision without asking you again and
+  again.
+</p>
+<p>
+  Umami processes the data on our behalf under a data processing agreement
+  (Art.&nbsp;28 GDPR). We selected the EU data region for our account, so the
+  statistics are stored in the EU. However, Umami Software, Inc. is based in the
+  USA and also uses sub-processors in the USA, so transfers to the USA cannot be
+  ruled out. They are based on the EU standard contractual clauses
+  (Art.&nbsp;46(2)(c) GDPR), which are part of the data processing agreement.
+</p>
+<p>
+  The statistics are deleted after {retention}. Regardless of your decision in
+  the banner, you can also technically prevent the measurement by blocking
+  scripts from cloud.umami.is with a content blocker or by disabling JavaScript.
+  For more information, see <a href={umamiPrivacy}>Umami’s privacy policy</a>.
+</p>
+
+<h2>5. “Want” marks in your browser</h2>
+<p>
+  When you click “Want” on a design, the website saves the list of designs you
+  have marked in your browser’s local storage. This keeps your marks when you
+  move between pages or come back to the website later. The list contains no
+  identifier that identifies you and is not transmitted to us or to anyone else.
+  If you have consented to the visitor statistics, the click itself is also
+  counted there (see section&nbsp;4).
+</p>
+<p>
+  You can remove a mark by clicking again, or delete all data this website has
+  stored in your browser settings. Otherwise the list stays stored until you
+  delete it.
+</p>
+<p>
+  The list is saved only once you use the feature, and solely to provide the
+  marking feature you asked for. This is strictly necessary for that feature and
+  therefore permitted without consent under §&nbsp;25(2) no.&nbsp;2 TDDDG. To
+  the extent that personal data is processed, the legal basis is
+  Art.&nbsp;6(1)(f) GDPR; our legitimate interest is to offer you the marking
+  feature.
+</p>
+
+<h2>6. Contact by email</h2>
+<p>
+  If you send us an email, we process your email address, the content of your
+  message and any other information you give us in order to answer your enquiry.
+  The legal basis is Art.&nbsp;6(1)(f) GDPR; our legitimate interest is
+  answering your enquiry. The message is stored with our email provider. We
+  delete it once your enquiry has been dealt with, unless statutory retention
+  obligations require otherwise.
+</p>
+
+<h2>7. Link to Instagram</h2>
+<p>
+  The footer of this website links to an Instagram profile. It is a plain link:
+  no data is sent to Instagram when you visit our website. Only if you follow
+  the link do you go to Instagram, operated by Meta Platforms Ireland Limited,
+  whose privacy policy then applies.
+</p>
+
+<h2>8. Fonts</h2>
+<p>
+  The fonts of this website are delivered together with the website. There is no
+  connection to external font services such as Google Fonts.
+</p>
+
+<h2>9. Your rights</h2>
+<p>
+  Under the GDPR you have the following rights regarding personal data
+  concerning you:
+</p>
+<ul>
+  <li>access (Art.&nbsp;15 GDPR),</li>
+  <li>rectification (Art.&nbsp;16 GDPR),</li>
+  <li>erasure (Art.&nbsp;17 GDPR),</li>
+  <li>restriction of processing (Art.&nbsp;18 GDPR),</li>
+  <li>data portability (Art.&nbsp;20 GDPR),</li>
+  <li>objection to processing (Art.&nbsp;21 GDPR, see below),</li>
+  <li>
+    withdrawal of consent with effect for the future (Art.&nbsp;7(3) GDPR); for
+    the visitor statistics at any time via {settings} in the footer of the
+    website.
+  </li>
+</ul>
+<p>
+  To exercise them, simply write to us at <a href={mailto}>{OPERATOR.email}</a>.
+</p>
+<p>
+  The statistics and the decision stored in your browser (section&nbsp;4) and
+  the marks in your browser (section&nbsp;5) contain nothing that allows us to
+  identify you. We can therefore usually not match enquiries about this data to
+  a person (Art.&nbsp;11 GDPR).
+</p>
+
+<h3>Right to object under Art.&nbsp;21 GDPR</h3>
+<p>
+  Where we process data on the basis of Art.&nbsp;6(1)(f) GDPR, you have the
+  right to object to this processing at any time on grounds relating to your
+  particular situation. We will then no longer process the data unless we can
+  demonstrate compelling legitimate grounds for the processing which override
+  your interests, rights and freedoms, or the processing serves the
+  establishment, exercise or defence of legal claims.
+</p>
+
+<h3>Right to lodge a complaint</h3>
+<p>
+  You have the right to lodge a complaint with a data protection supervisory
+  authority (Art.&nbsp;77 GDPR), in particular in the member state of your
+  habitual residence, place of work or place of the alleged infringement. The
+  authority responsible for us is: <a href={authority.url}>{authority.name}</a>.
+</p>
+
+<h2>10. Further information</h2>
+<p>
+  You are not obliged to provide us with personal data. Without the data
+  transmitted technically when you open a page (section&nbsp;3), however, the
+  website cannot be delivered. There is no automated decision-making, including
+  profiling (Art.&nbsp;22 GDPR).
+</p>
+<p>
+  We update this privacy policy when the website or the law changes. The version
+  published here applies.
+</p>

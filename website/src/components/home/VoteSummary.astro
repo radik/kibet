@@ -1,0 +1,77 @@
+---
+/**
+ * Vote summary, section#want: heading, body, and a polite live status line
+ * with the number of designs this visitor marked (from the want store).
+ */
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import { MODELS } from '../../data/models.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const none = t('vote.statusNone');
+// The script fills in {count}.
+const countTemplate = t('vote.statusCount', { count: '{count}' });
+const known = MODELS.map((model) => model.slug).join(' ');
+---
+
+<section id="want" class="vote" aria-labelledby="want-title">
+  <div class="inner">
+    <h2 id="want-title" class="label">
+      {t('vote.title')}
+    </h2>
+    <p class="body">{t('vote.body')}</p>
+    <p
+      class="status"
+      role="status"
+      aria-live="polite"
+      data-want-status
+      data-want-known={known}
+      data-text-none={none}
+      data-text-count={countTemplate}
+    >
+      {none}
+    </p>
+  </div>
+</section>
+
+<script>
+  import { initWantStatus } from '../../scripts/want.ts';
+
+  const statuses = document.querySelectorAll<HTMLElement>('[data-want-status]');
+  for (const status of Array.from(statuses)) initWantStatus(status);
+</script>
+
+<style>
+  .vote {
+    display: flex;
+    justify-content: center;
+    padding: clamp(96px, 10vw, 160px) 20px;
+  }
+  .inner {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+  }
+  h2 {
+    font-weight: 500;
+    letter-spacing: 0.08em;
+  }
+  .body {
+    font-family: var(--font-serif);
+    font-size: 17px;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+  .status {
+    color: var(--color-grey-700);
+    font-size: 12px;
+  }
+</style>

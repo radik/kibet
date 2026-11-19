@@ -1,0 +1,313 @@
+---
+/**
+ * Model page info column: crumb, title (the page's h1), description, colour
+ * swatches, the variant / lettering / footnote pickers the model has, the
+ * block «Want» with its status note, and “About the print”.
+ *
+ * No size picker, size chart, price or shop wording, by design (legal).
+ * Lies inside the page's `[data-gallery]` / `[data-want-scope]` root
+ * (ModelProduct.astro); the swatches follow the gallery contract
+ * (src/scripts/gallery.ts), the rest src/scripts/model-page.ts. Without JS
+ * the text and “About the print” read normally; the controls stay invisible.
+ */
+import OptionGroup from './OptionGroup.astro';
+import WantButton from '../WantButton.astro';
+import type { Locale } from '../../i18n/locales.ts';
+import { localized, useTranslations } from '../../i18n/ui.ts';
+import {
+  FOOTNOTE_LANG_NAMES,
+  SHIRT_COLORS,
+  printsOf,
+  type Model,
+} from '../../data/models.ts';
+import {
+  FIRST_COLOR,
+  FOOTNOTE_LANGS,
+  INSCRIPTION_OFF,
+  INSCRIPTION_ON,
+  NO_FOOTNOTE,
+  hasFootnote,
+  splitAt,
+} from './options.ts';
+
+interface Props {
+  locale: Locale;
+  model: Model;
+}
+
+const { locale, model } = Astro.props;
+const t = useTranslations(locale);
+const titleId = 'model-title';
+const variants = model.variants;
+const print = printsOf(model)[0];
+const footnote = hasFootnote(model);
+
+// Split around the placeholder so the print or variant name gets its `lang`.
+const [variantBefore, variantAfter] = splitAt(
+  t('model.variant', { name: '{name}' }),
+  '{name}',
+);
+const [printBefore, printAfter] = splitAt(
+  t('model.inscription', { print: '{print}' }),
+  '{print}',
+);
+
+const variantChoices = variants?.map((variant) => ({
+  value: variant.key,
+  text: variant.name,
+  lang: 'tt',
+}));
+const inscriptionChoices = [
+  { value: INSCRIPTION_ON, text: t('model.withInscription') },
+  { value: INSCRIPTION_OFF, text: t('model.withoutInscription') },
+];
+const footnoteChoices = [
+  { value: NO_FOOTNOTE, text: t('model.footnoteNone') },
+  ...FOOTNOTE_LANGS.map((lang) => ({
+    value: lang,
+    text: FOOTNOTE_LANG_NAMES[lang],
+    lang,
+  })),
+];
+
+/*
+ * «Want» status note. Wanted: “on” when a footnote (or, for the tulip
+ * models, the lettering) is picked, “off” when not; the script fills in
+ * {variant} and {footnote} with the picked buttons' text.
+ */
+const noteIdle = t('model.wantIdle');
+let noteOn = t('model.wantThanks');
+let noteOff = noteOn;
+if (variants && footnote) {
+  noteOn = t('model.wantThanksVariantFootnote', {
+    variant: '{variant}',
+    footnote: '{footnote}',
+  });
+  noteOff = t('model.wantThanksVariantNoFootnote', { variant: '{variant}' });
+} else if (footnote) {
+  noteOn = t('model.wantThanksFootnote', { footnote: '{footnote}' });
+  noteOff = t('model.wantThanksNoFootnote');
+} else if (model.mark) {
+  noteOn = t('model.wantThanksInscription');
+  noteOff = t('model.wantThanksNoInscription');
+}
+---
+
+<div class="info">
+  <div class="intro">
+    <p class="crumb label">
+      {t('model.crumb', { series: t(`series.${model.series}` as const) })}
+    </p>
+    <h1 id={titleId} lang={model.titleLang}>
+      {model.title}
+    </h1>
+    <p class="description">{localized(model.description, locale)}</p>
+  </div>
+
+  <div class="colors" role="group" aria-labelledby="model-color-label">
+    <p id="model-color-label" class="label">
+      {SHIRT_COLORS.map(({ id }) => (
+        <span data-show-color={id} hidden={id !== FIRST_COLOR}>
+          {t('color.label', { color: t(`color.${id}` as const) })}
+        </span>
+      ))}
+    </p>
+    <div class="swatches">
+      {SHIRT_COLORS.map((color) => (
+        <button
+          type="button"
+          class="swatch"
+          data-gallery-color-option
+          data-color={color.id}
+          aria-pressed={color.id === FIRST_COLOR ? 'true' : 'false'}
+          aria-label={t('color.label', {
+            color: t(`color.${color.id}` as const),
+          })}
+          style={{ '--swatch': color.swatch }}
+        >
+          <span aria-hidden="true"></span>
+        </button>
+      ))}
+    </div>
+  </div>
+
+  {variants && (
+    <OptionGroup
+      option="variant"
+      choices={variantChoices ?? []}
+      selected={variants[0].key}
+      large
+    >
+      {variants.map((variant, index) => (
+        <span data-show-variant={variant.key} hidden={index > 0}>
+          {variantBefore}
+          <span lang="tt">{variant.name}</span>
+          {variantAfter}
+        </span>
+      ))}
+    </OptionGroup>
+  )}
+
+  {model.mark && print && (
+    <OptionGroup
+      option="inscription"
+      choices={inscriptionChoices}
+      selected={INSCRIPTION_ON}
+    >
+      {printBefore}
+      <span lang={print.lang}>{print.text}</span>
+      {printAfter}
+    </OptionGroup>
+  )}
+
+  {footnote && (
+    <OptionGroup
+      option="footnote"
+      choices={footnoteChoices}
+      selected={NO_FOOTNOTE}
+      hint={t('model.footnoteHint')}
+    >
+      {t('model.footnote')}
+    </OptionGroup>
+  )}
+
+  <div class="want">
+    <WantButton
+      locale={locale}
+      model={model}
+      size="block"
+      describedBy={titleId}
+    />
+  </div>
+  <p
+    class="note"
+    role="status"
+    data-want-note
+    data-model={model.slug}
+    data-text-idle={noteIdle}
+    data-text-on={noteOn}
+    data-text-off={noteOff}
+  >
+    {noteIdle}
+  </p>
+
+  <div class="about">
+    <details>
+      <summary class="label">
+        {t('model.about')}
+        <span class="sign" aria-hidden="true"></span>
+      </summary>
+      <p>{localized(model.about, locale)}</p>
+    </details>
+  </div>
+</div>
+
+<style>
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    flex: 1 1 300px;
+    min-width: 0;
+    max-width: 380px;
+  }
+  :global([data-model-page]:not([data-gallery-ready])) .colors,
+  :global([data-model-page]:not([data-gallery-ready])) .want {
+    visibility: hidden;
+  }
+
+  .intro {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .crumb {
+    color: var(--color-grey-700);
+  }
+  h1 {
+    margin-top: 4px;
+    font-family: var(--font-display);
+    font-size: 34px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    overflow-wrap: break-word;
+  }
+  .description {
+    font-family: var(--font-serif);
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+
+  .colors {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-top: 18px;
+    border-top: 1px solid var(--color-grey-200);
+  }
+  .swatches {
+    display: flex;
+    /* 44px buttons around 16px squares; the first square lines up with the
+       label. The mockup's 34px buttons left 18px between squares, these 28px. */
+    margin: -6px 0 -6px -14px;
+  }
+  .swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .swatch span {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgb(0 0 0 / 0.3);
+    background: var(--swatch);
+  }
+  .swatch[aria-pressed='true'] span {
+    outline: 1px solid var(--color-black);
+    outline-offset: 3px;
+  }
+
+  .note {
+    margin-top: -10px;
+    color: var(--color-grey-700);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .about {
+    border-top: 1px solid var(--color-grey-200);
+  }
+  details {
+    border-bottom: 1px solid var(--color-grey-200);
+  }
+  summary {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 0;
+    list-style: none;
+    cursor: pointer;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  .sign::before {
+    content: '+';
+  }
+  details[open] .sign::before {
+    content: '−';
+  }
+  details p {
+    margin-bottom: 14px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+</style>

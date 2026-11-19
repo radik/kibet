@@ -1,0 +1,73 @@
+---
+/*
+ * One 404 page for the whole site, in English (static hosting serves a single
+ * 404.html for every unknown URL, so the visitor's locale is unknown). Not
+ * indexable; it links to each locale's home page in that locale's language.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TulipMark from '../components/TulipMark.astro';
+import { DEFAULT_LOCALE, LOCALES, LOCALE_META } from '../i18n/locales.ts';
+import { localizePath } from '../i18n/paths.ts';
+import { useTranslations } from '../i18n/ui.ts';
+
+const locale = DEFAULT_LOCALE;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t('meta.notFound.title')}
+  description={t('meta.notFound.description')}
+  availableLocales={[]}
+  indexable={false}
+>
+  <div class="not-found">
+    <div class="mark">
+      <TulipMark />
+    </div>
+    <h1>404</h1>
+    <p>{t('notFound.heading')}</p>
+    <p>
+      <a href={localizePath('/', locale)}>{t('notFound.back')}</a>
+    </p>
+    <ul class="languages">
+      {LOCALES.map((code) => (
+        <li>
+          <a
+            href={localizePath('/', code)}
+            lang={LOCALE_META[code].htmlLang}
+            hreflang={LOCALE_META[code].htmlLang}
+          >
+            {LOCALE_META[code].nativeName}
+          </a>
+        </li>
+      ))}
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: var(--gutter);
+  }
+  .mark {
+    width: clamp(48px, 8vw, 96px);
+  }
+  h1 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(44px, 6.4vw, 96px);
+    line-height: 1;
+  }
+  .languages {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5em 1.5em;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+</style>

@@ -1,0 +1,116 @@
+---
+/**
+ * One option picker on the model page: a labelled group of toggle buttons
+ * (`aria-pressed`), one of them pressed. Buttons carry `data-option` and
+ * `data-value`; src/scripts/model-page.ts keeps the choice. The default slot
+ * is the visible label (it names the group); `hint` is an optional note
+ * beside it (it describes the group). Invisible until the script runs.
+ */
+interface Choice {
+  readonly value: string;
+  readonly text: string;
+  /** Language of `text` when it differs from the page's. */
+  readonly lang?: string | undefined;
+}
+
+interface Props {
+  option: 'variant' | 'footnote' | 'inscription';
+  choices: readonly Choice[];
+  /** Value pressed first. */
+  selected: string;
+  /** Grid columns; default: one per choice. */
+  columns?: number;
+  /** Larger button text (variant names). */
+  large?: boolean;
+  /** Note beside the label, e.g. “shown in the photo”. */
+  hint?: string | undefined;
+}
+
+const {
+  option,
+  choices,
+  selected,
+  columns = choices.length,
+  large = false,
+  hint,
+} = Astro.props;
+const labelId = `model-${option}-label`;
+const hintId = hint ? `model-${option}-hint` : undefined;
+---
+
+<div
+  class="group"
+  role="group"
+  aria-labelledby={labelId}
+  aria-describedby={hintId}
+>
+  <div class="head label">
+    <span id={labelId}>
+      <slot />
+    </span>
+    {hint && (
+      <span class="hint" id={hintId}>
+        {hint}
+      </span>
+    )}
+  </div>
+  <div class="choices" style={{ '--columns': String(columns) }}>
+    {choices.map((choice) => (
+      <button
+        type="button"
+        class:list={['choice', { large }]}
+        lang={choice.lang}
+        data-option={option}
+        data-value={choice.value}
+        aria-pressed={choice.value === selected ? 'true' : 'false'}
+      >
+        {choice.text}
+      </button>
+    ))}
+  </div>
+</div>
+
+<style>
+  .group {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  :global([data-model-page]:not([data-gallery-ready])) .group {
+    visibility: hidden;
+  }
+  .head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .hint {
+    color: var(--color-grey-700);
+    font-size: 12px;
+    letter-spacing: var(--text-base-tracking);
+    text-transform: none;
+  }
+  .choices {
+    display: grid;
+    grid-template-columns: repeat(var(--columns), minmax(0, 1fr));
+    gap: 4px;
+  }
+  .choice {
+    height: 44px;
+    padding: 0 6px;
+    border: 1px solid var(--color-grey-300);
+    border-radius: 0;
+    background: var(--color-white);
+    color: var(--color-black);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .large {
+    font-size: 13px;
+  }
+  .choice[aria-pressed='true'] {
+    border-color: var(--color-black);
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+</style>

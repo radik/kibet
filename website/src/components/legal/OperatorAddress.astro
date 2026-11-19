@@ -1,0 +1,29 @@
+---
+/** Operator name and postal address from src/data/legal.ts, one per line. */
+import { OPERATOR } from '../../data/legal.ts';
+import type { LegalLanguage } from './meta.ts';
+
+interface Props {
+  language: LegalLanguage;
+}
+
+const { language } = Astro.props;
+const lines = [
+  OPERATOR.name,
+  OPERATOR.street,
+  `${OPERATOR.postalCode} ${OPERATOR.city}`,
+  OPERATOR.country[language],
+];
+---
+
+<address>
+  {lines.map((line) => (
+    <span>{line}</span>
+  ))}
+</address>
+
+<style>
+  span {
+    display: block;
+  }
+</style>

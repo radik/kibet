@@ -1,0 +1,49 @@
+FONTLOG for Kibet Serif
+=======================
+
+Kibet Serif is the brand typeface of Kibet (Berlin). It is a modified
+version of PT Serif 1.000W by ParaType Ltd., released under the
+SIL Open Font License 1.1. As required by the license, the modified
+fonts do not use the Reserved Font Names "PT Sans", "PT Serif" or
+"ParaType".
+
+ChangeLog
+
+2026-11-16 (Kibet) Kibet Serif / Kibet Serif Display 1.001
+  - Light and Display Light rebuilt from the Regular outlines with a
+    curve-preserving method: TrueType curves are kept (no polylines),
+    vertical stems thinned by 12 units per side, horizontal strokes,
+    serifs and all vertical metrics left exactly as in Regular (the 1.000
+    Light had serifs and terminals pushed past the baseline/ascender,
+    e.g. k at -4/756, and hairlines thinned by 24 units, which left
+    ©, ®, /, = and the star at 30-50% of their Regular weight).
+    Kibet star thinned evenly by 5 units per side. Advance widths unchanged.
+  - Light and Display Light autohinted (ttfautohint) for screen use.
+  - Latin schwa U+018F/U+0259 mapped to the Cyrillic Ә/ә glyphs, so Tatar
+    text typed with the Latin character does not fall back to another font.
+  - Stale DSIG signature removed; OS/2 xAvgCharWidth recalculated;
+    Light PANOSE weight set to 3 (Light).
+  - kibet-wordmark-thin.svg redrawn with real curves (same geometry as
+    before within 1%, previously polylines).
+  - Previous files kept in _backup_v1.000/.
+
+2026-11-16 (Kibet) Kibet Serif / Kibet Serif Display 1.000
+  - Renamed families to "Kibet Serif" and "Kibet Serif Display".
+  - Redrawn asterisk (U+002A): the "Kibet star", an eight-petal rosette
+    referencing Tatar floral ornament; weight-matched for Regular/Bold,
+    slanted for the italics.
+  - Kibet Serif Display (Regular, Bold): spacing tightened by 22 units
+    per glyph (UPM 1000) for headlines and garment prints.
+  - Removed hdmx/LTSH/VDMX tables (recomputed by renderers).
+
+2026-11-16 (Kibet) Kibet Serif Light / Kibet Serif Display Light 1.000
+  - New Light weight (usWeightClass 300) derived from the Regular
+    outlines: contours offset inward by 12 units (UPM 1000), cap height,
+    x-height, ascender and descender restored to the Regular values.
+  - Advance widths reduced by 12 units per glyph to keep word images
+    compact.
+  - Curves converted to fine polylines; TrueType hinting removed.
+
+Acknowledgements
+  - PT Serif: ParaType Ltd., designers Alexandra Korolkova, Olga Umpeleva,
+    Vladimir Yefimov (Public Types of Russian Federation project).

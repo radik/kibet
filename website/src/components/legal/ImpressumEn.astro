@@ -1,0 +1,45 @@
+---
+/*
+ * Impressum, English courtesy translation of ImpressumDe.astro (binding).
+ * Operator details come from src/data/legal.ts.
+ */
+import OperatorAddress from './OperatorAddress.astro';
+import { OPERATOR } from '../../data/legal.ts';
+import { legalPath } from '../../i18n/paths.ts';
+
+const mailto = `mailto:${OPERATOR.email}`;
+const privacyHref = legalPath('datenschutz', 'en');
+---
+
+<h2>Provider</h2>
+<p>
+  Information pursuant to §&nbsp;5 of the German Digital Services Act
+  (Digitale-Dienste-Gesetz, DDG) and §&nbsp;18(1) of the German Interstate Media
+  Treaty (Medienstaatsvertrag, MStV):
+</p>
+<OperatorAddress language="en" />
+
+<h2>Contact</h2>
+<p>
+  Email: <a href={mailto}>{OPERATOR.email}</a>
+</p>
+{OPERATOR.phone && <p>Phone: {OPERATOR.phone}</p>}
+
+<h2>About this website</h2>
+<p>
+  Kibet is a planned T-shirt label. This website presents designs, and visitors
+  can mark the designs they like. Nothing is sold through this website and no
+  contracts are concluded.
+</p>
+
+<h2>Consumer dispute resolution</h2>
+<p>
+  We are neither willing nor obliged to take part in dispute resolution
+  proceedings before a consumer arbitration board.
+</p>
+
+<h2>Data protection</h2>
+<p>
+  How we handle data is explained in the
+  <a href={privacyHref}>privacy policy</a>.
+</p>

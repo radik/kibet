@@ -1,0 +1,81 @@
+---
+/**
+ * Collection grid, section#series (target of the header's “Collection” link
+ * and the hero link): heading, hint, one ModelCard per model.
+ * Its script starts the card galleries and the want buttons.
+ */
+import ModelCard from './ModelCard.astro';
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import { MODELS } from '../../data/models.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section id="series" class="series" aria-labelledby="series-title">
+  <div class="head label">
+    <h2 id="series-title">
+      {t('collection.heading', { count: MODELS.length })}
+    </h2>
+    <p class="hint">{t('collection.hint')}</p>
+  </div>
+  <ul class="grid" role="list">
+    {MODELS.map((model) => (
+      <li>
+        <ModelCard locale={locale} model={model} />
+      </li>
+    ))}
+  </ul>
+</section>
+
+<script>
+  import { initGalleries } from '../../scripts/gallery.ts';
+  import { initWantButtons } from '../../scripts/want.ts';
+
+  initGalleries(document, {
+    // The card is the want scope: report the colour on show in kibet:want.
+    onChange(gallery, state) {
+      const scope = gallery.root.closest<HTMLElement>('[data-want-scope]');
+      if (scope && state.color !== undefined) {
+        scope.dataset.wantColor = state.color;
+      }
+    },
+  });
+  initWantButtons();
+</script>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding: 0 clamp(10px, 1.2vw, 16px) 14px;
+  }
+  h2 {
+    font-size: inherit;
+    font-weight: 500;
+  }
+  .hint {
+    color: var(--color-grey-700);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(max(160px, calc((100% - 12px) / 4)), 1fr)
+    );
+    gap: 48px 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .grid > li {
+    min-width: 0;
+  }
+</style>

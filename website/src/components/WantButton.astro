@@ -1,0 +1,122 @@
+---
+/**
+ * «Want» interest-poll button. Not a purchase control: no shop wording.
+ *
+ * Markup contract for the client script (src/scripts/want.ts) and analytics
+ * (later stages):
+ *
+ * - `data-want-model`: model slug, e.g. 'ir-hatyn'.
+ * - `data-want-variant`: variant key ('ir' / 'hatyn'), when there is one.
+ * - `data-want-source`: where the button sits, reported in the `kibet:want`
+ *   event: 'home-card' | 'home-photo' | 'model-page' (default by size).
+ * - `aria-pressed`: 'false' / 'true'; the script toggles it.
+ * - `data-text-pressed` / `data-label-pressed`: text and aria-label to swap
+ *   in when pressed (the unpressed ones are what is rendered).
+ * - `.check` (aria-hidden ✓) is shown by CSS while pressed.
+ */
+import type { Locale } from '../i18n/locales.ts';
+import { useTranslations } from '../i18n/ui.ts';
+import type { Model } from '../data/models.ts';
+import type { WantSource } from '../scripts/want.ts';
+
+type Size = 'compact' | 'large' | 'block';
+
+interface Props {
+  locale: Locale;
+  model: Model;
+  variantKey?: string | undefined;
+  /** compact: under a grid card; large: over the last card photo; block: model page. */
+  size?: Size;
+  source?: WantSource | undefined;
+  /** id of an element naming the model, for sizes whose text does not. */
+  describedBy?: string | undefined;
+}
+
+const DEFAULT_SOURCE: Readonly<Record<Size, WantSource>> = {
+  compact: 'home-card',
+  large: 'home-photo',
+  block: 'model-page',
+};
+
+const {
+  locale,
+  model,
+  variantKey,
+  size = 'compact',
+  source = DEFAULT_SOURCE[size],
+  describedBy,
+} = Astro.props;
+const t = useTranslations(locale);
+const title = model.title;
+const text = size === 'large' ? t('want.large') : t('want.button');
+const textPressed = size === 'large' ? t('want.largePressed') : text;
+const label = size === 'compact' ? t('want.buttonLabel', { title }) : undefined;
+const labelPressed =
+  size === 'compact' ? t('want.buttonLabelPressed', { title }) : undefined;
+---
+
+<button
+  type="button"
+  class:list={['want', 'label', size]}
+  aria-pressed="false"
+  aria-label={label}
+  aria-describedby={describedBy}
+  data-want-model={model.slug}
+  data-want-variant={variantKey}
+  data-want-source={source}
+  data-text-pressed={textPressed}
+  data-label-pressed={labelPressed}
+>
+  <span class="text">{text}</span>
+  <span class="check" aria-hidden="true">
+    ✓
+  </span>
+</button>
+
+<style>
+  .want {
+    position: relative;
+    height: 36px;
+    min-width: 76px;
+    padding: 0 14px;
+    border: 1px solid var(--color-black);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-black);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+  /* 36px tall: extend the hit area to 44px without changing the layout. */
+  .compact::after {
+    content: '';
+    position: absolute;
+    inset: -5px -1px;
+  }
+  .large,
+  .block {
+    height: 48px;
+    padding: 0 28px;
+    font-size: 12px;
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+  .block {
+    width: 100%;
+  }
+  .want[aria-pressed='true'] {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+  .large[aria-pressed='true'],
+  .block[aria-pressed='true'] {
+    background: var(--color-white);
+    color: var(--color-black);
+  }
+  .check {
+    display: none;
+  }
+  [aria-pressed='true'] .check {
+    display: inline;
+  }
+</style>

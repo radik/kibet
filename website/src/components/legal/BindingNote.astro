@@ -1,0 +1,28 @@
+---
+/** Note on the English legal pages that only the German text is binding. */
+import { legalPath, type LegalPage } from '../../i18n/paths.ts';
+
+interface Props {
+  page: LegalPage;
+}
+
+const { page } = Astro.props;
+const href = legalPath(page, 'de');
+---
+
+<p class="binding">
+  This English text is a courtesy translation. Only the
+  <a href={href} hreflang="de">
+    German version
+  </a>{' '}
+  is legally binding.
+</p>
+
+<style>
+  .binding {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-left: 2px solid var(--color-black);
+    background: var(--color-placeholder);
+  }
+</style>

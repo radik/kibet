@@ -1,0 +1,24 @@
+---
+/**
+ * The Kibet tulip. Decorative (aria-hidden): give the surrounding link or
+ * figure its accessible name. It fills its container's width; size it there.
+ */
+import { TULIP_PATH } from '../data/brand.ts';
+---
+
+<svg viewBox="-20 20 480 440" aria-hidden="true" focusable="false">
+  <g transform="translate(0 223) scale(1 1.22) translate(0 -223)">
+    <path fill-rule="evenodd" d={TULIP_PATH}></path>
+  </g>
+</svg>
+
+<style>
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  path {
+    fill: var(--color-accent);
+  }
+</style>

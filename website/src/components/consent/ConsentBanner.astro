@@ -1,0 +1,172 @@
+---
+/**
+ * Analytics consent banner: a labelled, non-modal region fixed to the bottom
+ * of the viewport, placed right after the skip link so it comes early in the
+ * tab order. Rendered `hidden`; src/scripts/consent-banner.ts shows it until
+ * the visitor decides, and the footer's “Privacy settings” control
+ * (`[data-consent-open]`, aria-controls="consent-banner") reopens it.
+ * Without JavaScript it never appears and nothing is tracked.
+ *
+ * Accept and decline are identical in size, weight and style. Also loads the
+ * consent-gated analytics (src/scripts/analytics.ts).
+ */
+import type { Locale } from '../../i18n/locales.ts';
+import { consentStrings, consentText } from '../../i18n/consent.ts';
+import { legalLocale, legalPath } from '../../i18n/paths.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const s = consentStrings(locale);
+const t = useTranslations(locale);
+const text = consentText(locale, t('want.button'));
+const policyHref = legalPath('datenschutz', locale);
+const policyLang = legalLocale(locale);
+---
+
+<div class="announce" role="status" data-consent-announce></div>
+<section
+  id="consent-banner"
+  class="consent"
+  aria-labelledby="consent-title"
+  tabindex="-1"
+  data-consent-banner
+  data-current-granted={s.currentGranted}
+  data-current-denied={s.currentDenied}
+  data-saved-granted={s.savedGranted}
+  data-saved-denied={s.savedDenied}
+  hidden
+>
+  <div class="inner">
+    <div class="copy">
+      <p id="consent-title" class="title label" data-consent-title>
+        {s.title}
+      </p>
+      <p class="text">
+        <span data-consent-text>{text}</span>
+        <a href={policyHref} hreflang={policyLang}>
+          {s.policyLink}
+        </a>
+      </p>
+      <p class="current" data-consent-current hidden></p>
+    </div>
+    <div class="actions">
+      <button type="button" class="choice label" data-consent-choice="granted">
+        {s.accept}
+      </button>
+      <button type="button" class="choice label" data-consent-choice="denied">
+        {s.decline}
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { initAnalytics } from '../../scripts/analytics.ts';
+  import { initConsentBanner } from '../../scripts/consent-banner.ts';
+
+  initAnalytics();
+  initConsentBanner();
+</script>
+
+<style>
+  .announce {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+  .consent {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: 50;
+    max-height: 60vh;
+    max-height: 60dvh;
+    overflow-y: auto;
+    border-top: 1px solid var(--color-black);
+    background: var(--color-white);
+    color: var(--color-black);
+    animation: consent-fade 160ms ease-out;
+  }
+  .consent[hidden] {
+    display: none;
+  }
+  .consent:focus {
+    outline: none;
+  }
+  .consent:focus-visible {
+    outline: 2px solid var(--color-black);
+    outline-offset: -4px;
+  }
+  .inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding: 20px var(--gutter);
+  }
+  .copy {
+    flex: 1 1 32rem;
+    max-width: 75ch;
+  }
+  .title {
+    font-weight: 600;
+  }
+  .text {
+    margin-top: 8px;
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .text a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+  .current {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--color-grey-700);
+  }
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    flex: 0 1 26rem;
+    min-width: min(100%, 18rem);
+  }
+  .choice {
+    min-height: 48px;
+    padding: 8px 16px;
+    border: 1px solid var(--color-black);
+    border-radius: 0;
+    background: var(--color-white);
+    color: var(--color-black);
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+  }
+  .choice:hover {
+    background: var(--color-black);
+    color: var(--color-white);
+  }
+  @keyframes consent-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .consent {
+      animation: none;
+    }
+  }
+</style>

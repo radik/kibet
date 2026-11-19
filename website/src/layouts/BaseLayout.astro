@@ -1,0 +1,128 @@
+---
+/**
+ * Document shell for every page: <head> (title, description, canonical,
+ * hreflang, Open Graph, font preload), skip link, Header, <main id="main">,
+ * Footer.
+ *
+ * Pages put their body in the default slot (it lands inside <main>) and
+ * anything between <main> and the footer in the "after-main" slot.
+ * Locale-neutral path and alternates are derived from the URL, so pages only
+ * pass their locale.
+ */
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import ConsentBanner from '../components/consent/ConsentBanner.astro';
+import { LOCALES, LOCALE_META, type Locale } from '../i18n/locales.ts';
+import { localeLinks, localizePath, splitLocale } from '../i18n/paths.ts';
+import { FALLBACK_LOCALE, useTranslations } from '../i18n/ui.ts';
+import { SITE_NAME } from '../data/brand.ts';
+
+interface Props {
+  locale: Locale;
+  title: string;
+  description: string;
+  /** Locales this page exists in (default: all). Drives hreflang and the switcher. */
+  availableLocales?: readonly Locale[];
+  /** false: robots noindex, no canonical or hreflang (e.g. the 404 page). */
+  indexable?: boolean;
+  headerVariant?: 'home' | 'page';
+  /** Header lies over the first section (home hero). */
+  headerOverlay?: boolean;
+}
+
+const {
+  locale,
+  title,
+  description,
+  availableLocales = LOCALES,
+  indexable = true,
+  headerVariant = 'page',
+  headerOverlay = false,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const meta = LOCALE_META[locale];
+const site = Astro.site ?? Astro.url;
+const { path } = splitLocale(Astro.url.pathname);
+const absolute = (href: string) => new URL(href, site).href;
+
+const canonical = absolute(localizePath(path, locale));
+const alternates = localeLinks(path, availableLocales).filter(
+  (link) => link.available,
+);
+const xDefault =
+  alternates.find((link) => link.locale === FALLBACK_LOCALE) ?? alternates[0];
+const ogAlternates = alternates.filter((link) => link.locale !== locale);
+---
+
+<!doctype html>
+<html lang={meta.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#ffffff" />
+    {indexable ? (
+      <>
+        <link rel="canonical" href={canonical} />
+        {alternates.map((link) => (
+          <link
+            rel="alternate"
+            hreflang={LOCALE_META[link.locale].htmlLang}
+            href={absolute(link.href)}
+          />
+        ))}
+        {xDefault && (
+          <link
+            rel="alternate"
+            hreflang="x-default"
+            href={absolute(xDefault.href)}
+          />
+        )}
+        <meta property="og:url" content={canonical} />
+      </>
+    ) : (
+      <meta name="robots" content="noindex" />
+    )}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={meta.ogLocale} />
+    {indexable &&
+      ogAlternates.map((link) => (
+        <meta
+          property="og:locale:alternate"
+          content={LOCALE_META[link.locale].ogLocale}
+        />
+      ))}
+    <link
+      rel="preload"
+      href="/fonts/KibetSerifDisplay-Regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">
+      {t('a11y.skipLink')}
+    </a>
+    <ConsentBanner locale={locale} />
+    <Header
+      locale={locale}
+      path={path}
+      availableLocales={availableLocales}
+      variant={headerVariant}
+      overlay={headerOverlay}
+    />
+    <main id="main">
+      <slot />
+    </main>
+    <slot name="after-main" />
+    <Footer locale={locale} />
+  </body>
+</html>

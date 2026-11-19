@@ -1,0 +1,21 @@
+# Heavy reference materials (kept locally, not in git)
+materials/*.pdf
+
+# macOS
+.DS_Store
+
+# Node / build output
+node_modules/
+dist/
+.astro/
+.wrangler/
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Claude Code local state
+.claude/.cc-writes/
+.claude/settings.local.json

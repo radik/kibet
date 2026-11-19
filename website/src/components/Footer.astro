@@ -1,0 +1,84 @@
+---
+/**
+ * Site footer: Instagram, legal links, “Privacy settings” (reopens the
+ * consent banner; JavaScript only), © line. Legal pages exist in English
+ * and German only; ru, fr and tt link to the English ones (legalPath).
+ */
+import {
+  COPYRIGHT_YEAR,
+  INSTAGRAM_URL,
+  SITE_HOST,
+  SITE_NAME,
+} from '../data/brand.ts';
+import type { Locale } from '../i18n/locales.ts';
+import { legalLocale, legalPath } from '../i18n/paths.ts';
+import { useTranslations } from '../i18n/ui.ts';
+import { consentStrings } from '../i18n/consent.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const legalLang = legalLocale(locale);
+const copyright = `© ${COPYRIGHT_YEAR} ${SITE_NAME} · ${SITE_HOST}`;
+---
+
+<footer class="footer label">
+  <nav aria-label={t('footer.navLabel')}>
+    <a href={INSTAGRAM_URL} rel="noopener noreferrer me">
+      {t('footer.instagram')}
+    </a>
+    <a href={legalPath('impressum', locale)} hreflang={legalLang}>
+      {t('footer.impressum')}
+    </a>
+    <a href={legalPath('datenschutz', locale)} hreflang={legalLang}>
+      {t('footer.privacy')}
+    </a>
+    {/* Reopens the consent banner; shown by src/scripts/consent-banner.ts. */}
+    <button
+      type="button"
+      class="settings"
+      aria-controls="consent-banner"
+      aria-expanded="false"
+      data-consent-open
+      hidden
+    >
+      {consentStrings(locale).settings}
+    </button>
+  </nav>
+  <span class="copyright">{copyright}</span>
+</footer>
+
+<style>
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px 32px;
+    padding: 28px var(--gutter);
+    border-top: 1px solid var(--color-grey-200);
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+  .settings {
+    padding: 4px 0;
+    margin: -4px 0;
+    border: 0;
+    background: none;
+    font-size: inherit;
+    text-transform: inherit;
+    cursor: pointer;
+  }
+  .settings:hover {
+    color: var(--color-grey-700);
+  }
+  .copyright {
+    color: var(--color-grey-700);
+  }
+</style>

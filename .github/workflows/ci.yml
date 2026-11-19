@@ -1,0 +1,180 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "website/**"
+      - ".github/workflows/ci.yml"
+  push:
+    branches: [main]
+    paths:
+      - "website/**"
+      - ".github/workflows/ci.yml"
+
+# A newer run for the same ref cancels an older one on pull requests only.
+# Pushes to main are queued, never cancelled, so a production deploy that is
+# already running is not interrupted mid-flight.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+# Default for every job; jobs widen it only where needed.
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: website
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: website/.node-version
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+      - run: npm run format:check
+      - run: npm run lint
+      - run: npm run check
+      - run: npm run build
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: website-dist
+          path: website/dist
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    name: Deploy to production
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    permissions:
+      contents: read
+    # Never cancel a deploy that has started; later deploys wait in line.
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      # The Impressum and privacy policy render from src/data/legal.ts. A
+      # production site with "[NAME]"-style placeholders is a legal problem,
+      # so refuse to deploy until the owner has filled them in.
+      - name: Refuse to deploy with placeholder legal data
+        run: |
+          if grep -nE "'\[[^']*\]'" src/data/legal.ts; then
+            echo "::error file=website/src/data/legal.ts::Fill in the placeholders above before deploying to production."
+            exit 1
+          fi
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: website/.node-version
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      # Installs the wrangler version pinned by the lockfile.
+      - run: npm ci
+
+      # Deploy exactly what the build job produced and checked.
+      - uses: actions/download-artifact@v8
+        with:
+          name: website-dist
+          path: website/dist
+
+      - uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: website
+          command: deploy
+
+  preview:
+    name: PR preview
+    needs: build
+    # Same-repo PRs only: forks get no secrets, and Dependabot PRs use a
+    # separate secret store that does not hold the Cloudflare secrets.
+    if: >-
+      github.event_name == 'pull_request' &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: website/.node-version
+          cache: npm
+          cache-dependency-path: website/package-lock.json
+
+      - run: npm ci
+
+      - uses: actions/download-artifact@v8
+        with:
+          name: website-dist
+          path: website/dist
+
+      # Uploads a new Worker version WITHOUT deploying it to production.
+      # The alias gives a stable URL per PR that follows later pushes.
+      - id: upload
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: website
+          command: versions upload --preview-alias pr-${{ github.event.pull_request.number }}
+
+      - name: Comment preview URL on the PR
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          SHA: ${{ github.event.pull_request.head.sha }}
+          PREVIEW_URL: ${{ steps.upload.outputs.preview-url || steps.upload.outputs.deployment-url }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          marker='<!-- kibet-preview-comment -->'
+          if [ -n "$PREVIEW_URL" ]; then
+            line="Preview: $PREVIEW_URL"
+          else
+            line="Version uploaded, but the action returned no preview URL. See the [run log]($RUN_URL)."
+          fi
+          body="$marker
+          **Preview deployment**
+
+          $line
+
+          Commit: \`${SHA:0:7}\` (not live on production)"
+          id=$(gh api --paginate "repos/$REPO/issues/$PR_NUMBER/comments" \
+            --jq ".[] | select(.user.login == \"github-actions[bot]\" and (.body | contains(\"$marker\"))) | .id" | head -n1)
+          if [ -n "$id" ]; then
+            gh api -X PATCH "repos/$REPO/issues/comments/$id" -f body="$body" > /dev/null
+          else
+            gh api -X POST "repos/$REPO/issues/$PR_NUMBER/comments" -f body="$body" > /dev/null
+          fi

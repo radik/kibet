@@ -1,0 +1,57 @@
+---
+/**
+ * “Kibet ябык*” (Tatar, untranslated) with its red star and the italic
+ * footnote. The stars are decoration: screen readers get phrase + footnote.
+ */
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import { CLOSED_PHRASE } from '../../data/brand.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<section class="closed">
+  <p class="phrase" lang={CLOSED_PHRASE.lang}>
+    {CLOSED_PHRASE.text}
+    <span class="star" aria-hidden="true">
+      *
+    </span>
+  </p>
+  <p class="footnote">
+    <span aria-hidden="true">* </span>
+    {t('closed.footnote')}
+  </p>
+</section>
+
+<style>
+  .closed {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: clamp(72px, 9vw, 140px) var(--gutter);
+  }
+  .phrase {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: clamp(44px, 6.4vw, 96px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .star {
+    color: var(--color-accent);
+  }
+  .footnote {
+    max-width: 560px;
+    color: var(--color-grey-900);
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: clamp(15px, 1.3vw, 18px);
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+</style>

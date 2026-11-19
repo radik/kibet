@@ -1,0 +1,42 @@
+---
+/*
+ * Impressum: /impressum/ (English courtesy translation) and /de/impressum/
+ * (German, binding). Built only for LEGAL_LOCALES; the footer of the
+ * other locales links to the English page (legalPath). Text and head
+ * metadata live in src/components/legal/, operator details in
+ * src/data/legal.ts.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import LegalArticle from '../../components/legal/LegalArticle.astro';
+import ImpressumDe from '../../components/legal/ImpressumDe.astro';
+import ImpressumEn from '../../components/legal/ImpressumEn.astro';
+import { LEGAL_PAGE_META, legalLanguage } from '../../components/legal/meta.ts';
+import type { Locale } from '../../i18n/locales.ts';
+import { LEGAL_LOCALES, localeParam } from '../../i18n/paths.ts';
+
+export function getStaticPaths() {
+  return LEGAL_LOCALES.map((locale) => ({
+    params: { locale: localeParam(locale) },
+    props: { locale },
+  }));
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const language = legalLanguage(locale);
+const meta = LEGAL_PAGE_META.impressum[language];
+---
+
+<BaseLayout
+  locale={locale}
+  title={meta.title}
+  description={meta.description}
+  availableLocales={LEGAL_LOCALES}
+>
+  <LegalArticle page="impressum" language={language} heading={meta.heading}>
+    {language === 'de' ? <ImpressumDe /> : <ImpressumEn />}
+  </LegalArticle>
+</BaseLayout>

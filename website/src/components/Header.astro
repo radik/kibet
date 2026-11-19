@@ -1,0 +1,102 @@
+---
+/**
+ * Site header.
+ *
+ * - variant 'home': tulip (home link) left; collection link and language
+ *   switcher right.
+ * - variant 'page': “← All designs” left, tulip centred, switcher right.
+ * - overlay: lies over the first section (the home hero photo) instead of
+ *   taking space in the flow.
+ */
+import TulipMark from './TulipMark.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import type { Locale } from '../i18n/locales.ts';
+import { localizePath } from '../i18n/paths.ts';
+import { useTranslations } from '../i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+  /** Locale-neutral path of the current page, e.g. '/models/berlin/'. */
+  path: string;
+  /** Locales the page exists in; the switcher sends the others home. */
+  availableLocales?: readonly Locale[] | undefined;
+  variant?: 'home' | 'page';
+  overlay?: boolean;
+}
+
+const {
+  locale,
+  path,
+  availableLocales,
+  variant = 'page',
+  overlay = false,
+} = Astro.props;
+const t = useTranslations(locale);
+const home = localizePath('/', locale);
+const collection = `${home}#series`;
+---
+
+<header class:list={['header', 'label', variant, { overlay }]}>
+  {variant === 'page' && (
+    <a class="back" href={collection}>
+      <span aria-hidden="true">← </span>
+      {t('nav.allModels')}
+    </a>
+  )}
+  <a class="logo" href={home} aria-label={t('header.homeLabel')}>
+    <TulipMark />
+  </a>
+  {variant === 'home' ? (
+    <nav aria-label={t('header.navLabel')}>
+      <a href={collection}>{t('nav.collection')}</a>
+      <LanguageSwitcher
+        locale={locale}
+        path={path}
+        availableLocales={availableLocales}
+      />
+    </nav>
+  ) : (
+    <div class="languages">
+      <LanguageSwitcher
+        locale={locale}
+        path={path}
+        availableLocales={availableLocales}
+      />
+    </div>
+  )}
+</header>
+
+<style>
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px var(--gutter);
+  }
+  .overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1;
+  }
+  .page {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    width: 22px;
+  }
+  .languages {
+    justify-self: end;
+  }
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 6px 22px;
+  }
+</style>

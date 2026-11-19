@@ -1,0 +1,157 @@
+---
+/**
+ * Home hero: campaign photo (or its placeholder), the KIBET wordmark as the
+ * page's h1, captions bottom left, link to the collection bottom right.
+ * The page passes `headerOverlay` to BaseLayout so the header lies over it.
+ */
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import {
+  SITE_NAME,
+  WORDMARK_PATH,
+  WORDMARK_VIEWBOX,
+} from '../../data/brand.ts';
+import { HERO_PHOTO } from '../../data/photos.ts';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+const photo = HERO_PHOTO;
+---
+
+<section class="hero">
+  {photo ? (
+    <img
+      class="photo"
+      src={photo.src}
+      width={photo.width}
+      height={photo.height}
+      alt={t('hero.photoAlt')}
+      loading="eager"
+      fetchpriority="high"
+      decoding="async"
+    />
+  ) : (
+    <div class="placeholder">
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+        <circle cx="12" cy="13" r="3.5" />
+      </svg>
+      <span class="caption">{t('hero.photoPlaceholder')}</span>
+    </div>
+  )}
+
+  <h1 class="wordmark">
+    <span class="visually-hidden">{SITE_NAME}</span>
+    <svg viewBox={WORDMARK_VIEWBOX} aria-hidden="true" focusable="false">
+      <path d={WORDMARK_PATH}></path>
+    </svg>
+  </h1>
+
+  <div class="captions label">
+    <p class="lines">
+      <span>{t('hero.collection')}</span>
+      <span class="status">{t('hero.status')}</span>
+    </p>
+    <a class="cta" href="#series">
+      {t('hero.cta')}
+      <span aria-hidden="true"> ↓</span>
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    --hero-inset: clamp(12px, 1.6vw, 24px);
+    position: relative;
+    height: clamp(560px, 60vw, 880px);
+    background: var(--color-placeholder-alt);
+    overflow: hidden;
+  }
+  .photo {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 24px;
+    color: var(--color-grey-700);
+    text-align: center;
+  }
+  .placeholder svg {
+    width: 28px;
+    height: 28px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .caption {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .wordmark {
+    position: absolute;
+    top: clamp(56px, 5vw, 72px);
+    left: var(--hero-inset);
+    right: var(--hero-inset);
+    margin: 0;
+    color: var(--color-black);
+    line-height: 0.8;
+  }
+  .wordmark svg {
+    /* Mockup width; below ~345px viewport it shrinks to fit. */
+    width: min(clamp(320px, 66vw, 980px), 100%);
+    height: auto;
+  }
+  .wordmark path {
+    fill: currentColor;
+  }
+  .captions {
+    position: absolute;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 24px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 12px;
+  }
+  .lines {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .status {
+    color: var(--color-grey-900);
+  }
+  .cta {
+    /* 44px hit area around 11px text, without moving it. */
+    display: inline-block;
+    padding: 14px 0;
+    margin: -14px 0;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

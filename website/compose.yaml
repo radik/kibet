@@ -1,0 +1,22 @@
+# Run every npm/node command through this service (see Makefile).
+# Only this folder is mounted into the container; node_modules lives in a
+# named volume, so no third-party package code is written to the host.
+services:
+  web:
+    build: .
+    init: true
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - npm_cache:/home/node/.npm
+    ports:
+      # Dev server, reachable from this machine only.
+      - '127.0.0.1:4321:4321'
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+volumes:
+  node_modules:
+  npm_cache:

@@ -1,0 +1,291 @@
+---
+/**
+ * Collection grid card: 3:4 photo gallery (4 angles × 2 shirt colours), the
+ * large «Want» on the last angle, then the title linking to the model page,
+ * the small «Want» and the colour swatches.
+ *
+ * Without JS the first photo, the title and the link are shown; the gallery
+ * and want controls stay invisible (their space is kept, so nothing shifts)
+ * until src/scripts/gallery.ts marks the card `data-gallery-ready`.
+ * The card is also the want scope: its `data-want-color` follows the colour
+ * picked here, for the `kibet:want` event.
+ */
+import WantButton from '../WantButton.astro';
+import PhotoFrame from '../PhotoFrame.astro';
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import {
+  PHOTO_ANGLES,
+  SHIRT_COLORS,
+  modelPath,
+  type Model,
+} from '../../data/models.ts';
+import { galleryFrames } from '../../data/photos.ts';
+
+interface Props {
+  locale: Locale;
+  model: Model;
+}
+
+const { locale, model } = Astro.props;
+const t = useTranslations(locale);
+const title = model.title;
+const titleId = `model-${model.slug}-title`;
+const frames = galleryFrames(model.slug);
+const firstColor = SHIRT_COLORS[0].id;
+---
+
+<article
+  class="card"
+  aria-labelledby={titleId}
+  data-gallery
+  data-gallery-color={firstColor}
+  data-want-scope
+  data-want-color={firstColor}
+>
+  <div class="photo">
+    <div class="frames" aria-live="polite">
+      {frames.map((frame) => (
+        <PhotoFrame
+          locale={locale}
+          model={model}
+          frame={frame}
+          visible={frame === frames[0]}
+        />
+      ))}
+    </div>
+    <span class="counter js-only" data-gallery-counter>
+      {`1 / ${PHOTO_ANGLES.length}`}
+    </span>
+    <button
+      type="button"
+      class="step prev js-only"
+      data-gallery-prev
+      aria-label={t('photo.prevOf', { title })}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M15 5l-7 7 7 7"></path>
+      </svg>
+    </button>
+    <button
+      type="button"
+      class="step next js-only"
+      data-gallery-next
+      aria-label={t('photo.nextOf', { title })}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9 5l7 7-7 7"></path>
+      </svg>
+    </button>
+    <div class="bars js-only" aria-hidden="true">
+      {PHOTO_ANGLES.map((_, index) => (
+        <span
+          class="bar"
+          data-gallery-bar
+          data-index={index}
+          data-active={index === 0 ? '' : undefined}
+        />
+      ))}
+    </div>
+    <div class="big" data-gallery-last hidden>
+      <WantButton
+        locale={locale}
+        model={model}
+        size="large"
+        describedBy={titleId}
+      />
+    </div>
+  </div>
+
+  <div class="info">
+    <div class="row">
+      <h3 class="title" id={titleId}>
+        <a href={modelPath(model.slug, locale)} lang={model.titleLang}>
+          {title}
+        </a>
+      </h3>
+      <div class="want-slot js-only">
+        <WantButton locale={locale} model={model} />
+      </div>
+    </div>
+    <div
+      class="swatches js-only"
+      role="group"
+      aria-label={t('color.groupLabel', { title })}
+    >
+      {SHIRT_COLORS.map((color) => (
+        <button
+          type="button"
+          class="swatch"
+          data-gallery-color-option
+          data-color={color.id}
+          aria-pressed={color.id === firstColor ? 'true' : 'false'}
+          aria-label={t('color.label', {
+            color: t(`color.${color.id}` as const),
+          })}
+          style={{ '--swatch': color.swatch }}
+        >
+          <span aria-hidden="true" />
+        </button>
+      ))}
+    </div>
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .card:not([data-gallery-ready]) .js-only {
+    visibility: hidden;
+  }
+
+  /* Photo gallery */
+  .photo {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    background: var(--color-placeholder);
+    overflow: hidden;
+  }
+  .frames {
+    position: absolute;
+    inset: 0;
+  }
+  .counter {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: var(--color-grey-900);
+    font-size: 11px;
+    pointer-events: none;
+  }
+  .step {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    width: 50%;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .step:focus-visible {
+    outline-offset: -4px;
+  }
+  .prev {
+    left: 0;
+    justify-content: flex-start;
+    padding: 0 0 0 10px;
+  }
+  .next {
+    right: 0;
+    justify-content: flex-end;
+    padding: 0 10px 0 0;
+  }
+  .step svg {
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: var(--color-black);
+    stroke-width: 1.2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .bars {
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    display: flex;
+    gap: 4px;
+    pointer-events: none;
+  }
+  .bar {
+    flex: 1;
+    height: 2px;
+    background: rgb(0 0 0 / 0.18);
+    transition: background-color 0.2s;
+  }
+  .bar[data-active] {
+    background: var(--color-black);
+  }
+  .big {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 36px;
+    display: flex;
+    justify-content: center;
+    pointer-events: none;
+  }
+  .big[hidden] {
+    display: none;
+  }
+  .big > :global(*) {
+    pointer-events: auto;
+  }
+
+  /* Title, small «Want», swatches */
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 10px clamp(10px, 1.2vw, 16px) 0;
+  }
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .title {
+    min-width: 0;
+    font-family: var(--font-serif);
+    font-size: 17px;
+    font-weight: 400;
+    line-height: 1.5;
+    letter-spacing: 0;
+  }
+  .title a {
+    /* 44px hit area: the text sits where the mockup puts it. */
+    display: block;
+    min-width: 44px;
+    min-height: 44px;
+    padding-top: 4px;
+    overflow-wrap: anywhere;
+  }
+  .want-slot {
+    flex: 0 0 auto;
+    margin-top: -2px;
+  }
+  .swatches {
+    display: flex;
+    /* 44px buttons around 12px squares; the first square lines up with
+       the title as in the mockup. */
+    margin: -4px 0 0 -16px;
+  }
+  .swatch {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .swatch span {
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgb(0 0 0 / 0.3);
+    background: var(--swatch);
+  }
+  .swatch[aria-pressed='true'] span {
+    outline: 1px solid var(--color-black);
+    outline-offset: 2px;
+  }
+</style>

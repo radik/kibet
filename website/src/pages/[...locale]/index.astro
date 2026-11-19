@@ -1,0 +1,44 @@
+---
+/*
+ * Routing: one page file serves all five locales. `[...locale]` is a rest
+ * parameter, so it may be empty: `undefined` builds `/` (English, the
+ * unprefixed default) and 'de' builds `/de/`. This avoids copying every page
+ * into src/pages/de/, ru/, fr/, tt/ and matches astro.config.mjs
+ * (prefixDefaultLocale: false). The same pattern serves /models/<slug>/.
+ */
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import HomeHero from '../../components/home/HomeHero.astro';
+import ClosedNote from '../../components/home/ClosedNote.astro';
+import CollectionGrid from '../../components/home/CollectionGrid.astro';
+import VoteSummary from '../../components/home/VoteSummary.astro';
+import { LOCALES, type Locale } from '../../i18n/locales.ts';
+import { localeParam } from '../../i18n/paths.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+
+export function getStaticPaths() {
+  return LOCALES.map((locale) => ({
+    params: { locale: localeParam(locale) },
+    props: { locale },
+  }));
+}
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const t = useTranslations(locale);
+---
+
+<BaseLayout
+  locale={locale}
+  title={t('meta.home.title')}
+  description={t('meta.home.description')}
+  headerVariant="home"
+  headerOverlay
+>
+  <HomeHero locale={locale} />
+  <ClosedNote locale={locale} />
+  <CollectionGrid locale={locale} />
+  <VoteSummary locale={locale} />
+</BaseLayout>

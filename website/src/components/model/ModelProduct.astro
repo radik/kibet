@@ -1,0 +1,65 @@
+---
+/**
+ * Model page body: gallery (thumbnails, photo, zoom) and the info column,
+ * in one root that is the page gallery (src/scripts/gallery.ts), the «Want»
+ * scope (src/scripts/want.ts) and the options root
+ * (src/scripts/model-page.ts). Its `data-want-*` attributes start at the
+ * first options and follow the visitor's picks, so `kibet:want` carries
+ * them: colour; variant (Ир / Хатын); footnote 'none' / 'en' / 'de' (models
+ * with a footnote); lettering 'on' / 'off' (models with the tulip mark).
+ */
+import ModelGallery from './ModelGallery.astro';
+import ModelInfo from './ModelInfo.astro';
+import ZoomDialog from './ZoomDialog.astro';
+import type { Locale } from '../../i18n/locales.ts';
+import type { Model } from '../../data/models.ts';
+import { shirtToneVars } from '../../data/shirt-tones.ts';
+import {
+  FIRST_COLOR,
+  INSCRIPTION_ON,
+  NO_FOOTNOTE,
+  hasFootnote,
+} from './options.ts';
+
+interface Props {
+  locale: Locale;
+  model: Model;
+}
+
+const { locale, model } = Astro.props;
+---
+
+<div
+  class="product"
+  style={shirtToneVars(FIRST_COLOR)}
+  data-model-page
+  data-gallery
+  data-gallery-color={FIRST_COLOR}
+  data-want-scope
+  data-want-color={FIRST_COLOR}
+  data-want-variant={model.variants?.[0].key}
+  data-want-footnote={hasFootnote(model) ? NO_FOOTNOTE : undefined}
+  data-want-inscription={model.mark ? INSCRIPTION_ON : undefined}
+>
+  <ModelGallery locale={locale} model={model} />
+  <ModelInfo locale={locale} model={model} />
+  <ZoomDialog locale={locale} model={model} />
+</div>
+
+<script>
+  import { initModelPage } from '../../scripts/model-page.ts';
+
+  const roots = document.querySelectorAll<HTMLElement>('[data-model-page]');
+  for (const root of Array.from(roots)) initModelPage(root);
+</script>
+
+<style>
+  .product {
+    --col-gap: clamp(24px, 3vw, 48px);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 24px var(--col-gap);
+    padding: 12px var(--gutter) 96px;
+  }
+</style>

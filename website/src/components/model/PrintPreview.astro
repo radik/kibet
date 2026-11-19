@@ -1,0 +1,173 @@
+---
+/**
+ * Stand-in for a product photo while there is none: the shirt colour, the
+ * tulip (models with `mark`), the print text and the translation footnote,
+ * as the visitor has picked them. Rendered inside PhotoFrame, which shows the
+ * real photo instead once it exists (src/data/photos.ts).
+ *
+ * Every variant's print and every footnote are rendered; the page script
+ * shows the picked ones through `data-show-*` (src/scripts/model-page.ts).
+ * Rendered state = the first options: first variant, lettering on, no
+ * footnote. The print close-up angle is drawn larger.
+ */
+import TulipMark from '../TulipMark.astro';
+import type { Locale } from '../../i18n/locales.ts';
+import { useTranslations } from '../../i18n/ui.ts';
+import { printsOf, type Model, type Print } from '../../data/models.ts';
+import type { GalleryFrame } from '../../data/photos.ts';
+import { shirtToneVars } from '../../data/shirt-tones.ts';
+import { FOOTNOTE_LANGS, INSCRIPTION_ON } from './options.ts';
+
+interface Props {
+  locale: Locale;
+  model: Model;
+  frame: GalleryFrame;
+  /** page: the gallery on the page; zoom: the full-screen dialog. */
+  size: 'page' | 'zoom';
+}
+
+interface Shown {
+  readonly print: Print;
+  /** Variant key, for `data-show-variant`; undefined: single print. */
+  readonly variant: string | undefined;
+}
+
+const { locale, model, frame, size } = Astro.props;
+const t = useTranslations(locale);
+const angle = t(`angle.${frame.angle}` as const);
+const caption = t('photo.label', { n: frame.index + 1, angle });
+const closeUp = frame.angle === 'print';
+const inscription = model.mark ? INSCRIPTION_ON : undefined;
+
+const prints: readonly Shown[] = model.variants
+  ? model.variants.map((variant) => ({ print: variant, variant: variant.key }))
+  : printsOf(model).map((print) => ({ print, variant: undefined }));
+
+const footnotes = prints.flatMap(({ print, variant }) => {
+  const footnote = print.footnote;
+  if (!footnote) return [];
+  return FOOTNOTE_LANGS.map((lang) => ({
+    lang,
+    text: `* ${footnote[lang]}`,
+    variant,
+  }));
+});
+---
+
+<div
+  class:list={['preview', size, { 'close-up': closeUp }]}
+  style={shirtToneVars(frame.color)}
+>
+  <span class="caption">{caption}</span>
+  <div class="art">
+    {model.mark && (
+      <div class="mark">
+        <TulipMark />
+      </div>
+    )}
+    {prints.map(({ print, variant }, index) => (
+      <p
+        class="print"
+        lang={print.lang}
+        data-show-variant={variant}
+        data-show-inscription={inscription}
+        hidden={index > 0}
+      >
+        {print.text}
+      </p>
+    ))}
+    {footnotes.map(({ lang, text, variant }) => (
+      <p
+        class="foot"
+        lang={lang}
+        data-show-variant={variant}
+        data-show-footnote={lang}
+        hidden
+      >
+        {text}
+      </p>
+    ))}
+  </div>
+</div>
+
+<style>
+  .preview {
+    position: absolute;
+    inset: 0;
+    background: var(--shirt-bg);
+    color: var(--shirt-ink);
+  }
+  .caption {
+    position: absolute;
+    top: 14px;
+    left: 14px;
+    color: var(--shirt-muted);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .art {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 12%;
+    text-align: center;
+    overflow-wrap: break-word;
+  }
+  .zoom .art {
+    gap: 18px;
+  }
+  .mark {
+    width: 30%;
+  }
+  .close-up .mark {
+    width: 46%;
+  }
+  .zoom .mark {
+    width: 34%;
+  }
+  .zoom.close-up .mark {
+    width: 50%;
+  }
+  .print {
+    max-width: 100%;
+    font-family: var(--font-display);
+    font-size: clamp(22px, 2.6vw, 38px);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+  }
+  .close-up .print {
+    font-size: clamp(36px, 5vw, 72px);
+  }
+  .zoom .print {
+    font-size: clamp(28px, 4.5vh, 56px);
+  }
+  .zoom.close-up .print {
+    font-size: clamp(40px, 7vh, 96px);
+  }
+  .foot {
+    max-width: 100%;
+    font-family: var(--font-serif);
+    font-size: clamp(11px, 0.9vw, 14px);
+    font-style: italic;
+    letter-spacing: 0;
+  }
+  .close-up .foot {
+    font-size: clamp(15px, 1.5vw, 22px);
+  }
+  .zoom .foot {
+    font-size: clamp(13px, 1.5vh, 18px);
+  }
+  .zoom.close-up .foot {
+    font-size: clamp(16px, 2.2vh, 28px);
+  }
+  .print[hidden],
+  .foot[hidden] {
+    display: none;
+  }
+</style>

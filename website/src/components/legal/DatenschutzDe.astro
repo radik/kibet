@@ -1,0 +1,325 @@
+---
+/*
+ * Datenschutzerklärung, German: the binding version. Keep
+ * DatenschutzEn.astro in step. Operator, supervisory authority and Umami
+ * settings come from src/data/legal.ts.
+ */
+import OperatorAddress from './OperatorAddress.astro';
+import {
+  ANALYTICS,
+  OPERATOR,
+  SUPERVISORY_AUTHORITY as authority,
+} from '../../data/legal.ts';
+import { CONSENT_STRINGS } from '../../i18n/consent.ts';
+import { CONSENT_STORAGE_KEY } from '../../scripts/consent.ts';
+
+const mailto = `mailto:${OPERATOR.email}`;
+const cloudflarePrivacy = 'https://www.cloudflare.com/privacypolicy/';
+const umamiPrivacy = 'https://umami.is/privacy';
+const daily = ANALYTICS.idRotation === 'daily';
+const saltChange = daily ? 'täglich' : 'zu Beginn jedes Kalendermonats';
+const idPeriod = daily ? 'eines Tages' : 'eines Kalendermonats';
+const retention = `${ANALYTICS.retentionMonths} Monaten`;
+const settings = `„${CONSENT_STRINGS.de.settings}“`;
+const decline = `„${CONSENT_STRINGS.de.decline}“`;
+const consentKey = `„${CONSENT_STORAGE_KEY}“`;
+---
+
+<h2>1. Verantwortlicher</h2>
+<p>
+  Verantwortlich für die Verarbeitung personenbezogener Daten auf dieser Website
+  im Sinne der Datenschutz-Grundverordnung (DSGVO) ist:
+</p>
+<OperatorAddress language="de" />
+<p>
+  E-Mail: <a href={mailto}>{OPERATOR.email}</a>
+</p>
+
+<h2>2. Das Wichtigste in Kürze</h2>
+<ul>
+  <li>
+    Diese Website setzt keine Cookies. Es gibt kein Kontaktformular, keinen
+    Newsletter und keine Benutzerkonten.
+  </li>
+  <li>
+    Für die Auslieferung der Website nutzen wir Cloudflare. Eine
+    Besucherstatistik mit Umami Cloud erstellen wir nur, wenn Sie über das
+    Banner auf der Website einwilligen; Ihre Entscheidung können Sie jederzeit
+    unter {settings} im Fußbereich der Website ändern. Beide Dienste verarbeiten
+    Ihre IP-Adresse; in der Statistik wird sie nicht gespeichert.
+  </li>
+  <li>
+    Welche Entwürfe Sie mit „Want“ markiert haben, wird nur in Ihrem Browser
+    gespeichert, ebenso Ihre Entscheidung zur Besucherstatistik.
+  </li>
+  <li>
+    Die Schriftarten werden mit der Website ausgeliefert. Inhalte anderer
+    Anbieter wie Videos, Karten oder Social-Media-Plugins binden wir nicht ein.
+  </li>
+</ul>
+
+<h2>3. Bereitstellung der Website über Cloudflare</h2>
+<p>
+  Diese Website wird über das Netzwerk von Cloudflare ausgeliefert (Cloudflare
+  Workers und Content Delivery Network). Anbieter ist Cloudflare, Inc., 101
+  Townsend St., San Francisco, CA 94107, USA.
+</p>
+<p>
+  Bei jedem Seitenaufruf überträgt Ihr Browser technisch notwendige Daten an die
+  Server von Cloudflare. Verarbeitet werden insbesondere:
+</p>
+<ul>
+  <li>Ihre IP-Adresse,</li>
+  <li>Datum und Uhrzeit des Abrufs,</li>
+  <li>die aufgerufene Adresse (URL) und die übertragene Datenmenge,</li>
+  <li>
+    der Referrer, also die zuvor besuchte Seite, soweit Ihr Browser ihn
+    übermittelt,
+  </li>
+  <li>
+    die Angaben Ihres Browsers zu Browsertyp und -version, Betriebssystem und
+    Spracheinstellung,
+  </li>
+  <li>technische Verbindungsdaten wie Protokoll und Statuscode.</li>
+</ul>
+<p>
+  Die Daten werden verarbeitet, um die Website auszuliefern, ihren stabilen und
+  sicheren Betrieb zu gewährleisten und Angriffe abzuwehren. Rechtsgrundlage ist
+  Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO; unser berechtigtes Interesse liegt
+  in einer sicheren und zuverlässigen Bereitstellung der Website. Dabei werden
+  nur die Angaben verarbeitet, die Ihr Browser beim Abruf ohnehin sendet.
+</p>
+<p>
+  Cloudflare verarbeitet diese Daten in unserem Auftrag auf Grundlage eines
+  Auftragsverarbeitungsvertrags (Art.&nbsp;28 DSGVO). Die Verarbeitung kann in
+  den USA und in anderen Ländern stattfinden, in denen Cloudflare Rechenzentren
+  betreibt. Cloudflare ist nach dem EU-US Data Privacy Framework zertifiziert;
+  Übermittlungen in die USA stützen sich daher auf den Angemessenheitsbeschluss
+  der Europäischen Kommission vom 10.&nbsp;Juli 2023 (Art.&nbsp;45 DSGVO). Für
+  andere Übermittlungen in Drittländer hat Cloudflare die
+  EU-Standardvertragsklauseln vereinbart (Art.&nbsp;46 Abs.&nbsp;2 lit.&nbsp;c
+  DSGVO).
+</p>
+<p>
+  Cloudflare speichert diese Daten nur so lange, wie es für die genannten Zwecke
+  erforderlich ist. Weitere Informationen finden Sie in der
+  <a href={cloudflarePrivacy}>Datenschutzerklärung von Cloudflare</a>.
+</p>
+
+<h2>4. Besucherstatistik mit Umami Cloud</h2>
+<p>
+  Um zu verstehen, welche Seiten und Entwürfe auf Interesse stoßen, nutzen wir
+  den Statistikdienst Umami Cloud. Anbieter ist Umami Software, Inc., 28 Geary
+  St, Suite 650 #243, San Francisco, Kalifornien, USA.
+</p>
+<p>
+  Nur wenn Sie eingewilligt haben, lädt Ihr Browser beim Aufruf einer Seite das
+  Umami-Skript von cloud.umami.is und sendet anschließend Nutzungsdaten an
+  gateway.umami.is. Ohne Ihre Einwilligung wird keine Verbindung zu Umami
+  hergestellt. Verarbeitet werden dabei:
+</p>
+<ul>
+  <li>die aufgerufene Seite (Adresse und Seitentitel) und der Zeitpunkt,</li>
+  <li>
+    der Referrer, also die Seite, von der Sie kommen, soweit Ihr Browser ihn
+    übermittelt,
+  </li>
+  <li>
+    Browser, Betriebssystem und Gerätetyp, Bildschirmgröße und
+    Spracheinstellung,
+  </li>
+  <li>
+    der ungefähre Standort (Land, Region, Stadt), den Umami aus Ihrer IP-Adresse
+    ableitet,
+  </li>
+  <li>
+    wenn Sie bei einem Entwurf auf „Want“ klicken oder die Markierung wieder
+    entfernen: welcher Entwurf betroffen ist, welche Optionen dabei gewählt
+    waren, zum Beispiel Shirtfarbe oder Sprache der Fußnote, und an welcher
+    Stelle der Website Sie geklickt haben. Markierungen aus der Zeit vor Ihrer
+    Einwilligung werden nicht nachträglich übermittelt.
+  </li>
+</ul>
+<p>
+  Ihre IP-Adresse wird nur kurzzeitig verarbeitet, um die Anfrage zu
+  beantworten, den ungefähren Standort zu bestimmen und eine Besucherkennung zu
+  berechnen; in den Statistikdaten wird sie nicht gespeichert. Bei den
+  Infrastrukturdienstleistern von Umami kann sie für begrenzte Zeit in Betriebs-
+  und Sicherheitsprotokollen gespeichert werden. Die Besucherkennung ist ein
+  Hashwert aus IP-Adresse, Browserkennung (User-Agent), der Kennung unserer
+  Website und einem geheimen Wert, den Umami {saltChange} wechselt. Mit ihr
+  lassen sich Seitenaufrufe innerhalb {idPeriod} zusammenfassen; danach entsteht
+  eine neue Kennung, und frühere Aufrufe lassen sich ihr nicht mehr zuordnen.
+  Umami setzt keine Cookies und verfolgt Sie nicht über andere Websites hinweg.
+</p>
+<p>
+  Das Skript speichert keine Informationen auf Ihrem Endgerät. Beim Laden liest
+  es Angaben aus, die Ihr Browser Websites zur Verfügung stellt
+  (Bildschirmgröße, Spracheinstellung, Adresse und Titel der Seite), und prüft,
+  ob in Ihrem Browser der Eintrag „umami.disabled“ gesetzt ist, mit dem sich die
+  Messung abschalten lässt.
+</p>
+<p>
+  Wir nutzen die Statistik, um zu erfahren, wie die Website genutzt wird und
+  welche Entwürfe gefallen, und um zu entscheiden, welche Entwürfe produziert
+  werden. Wir haben dafür ein Verfahren gewählt, das ohne Cookies, ohne
+  Speicherung der IP-Adresse und ohne websiteübergreifende Kennungen auskommt.
+  Rechtsgrundlage ist Ihre Einwilligung: für die Verarbeitung Ihrer Daten
+  Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;a DSGVO, für das Auslesen von Informationen
+  aus Ihrem Endgerät §&nbsp;25 Abs.&nbsp;1 des
+  Telekommunikation-Digitale-Dienste-Datenschutz-Gesetzes (TDDDG).
+</p>
+<p>
+  Ihre Einwilligung erteilen Sie über das Banner, das beim ersten Besuch der
+  Website erscheint. Sie ist freiwillig; wenn Sie ablehnen, können Sie die
+  Website ohne Einschränkungen nutzen. Sie können Ihre Einwilligung jederzeit
+  mit Wirkung für die Zukunft widerrufen (Art.&nbsp;7 Abs.&nbsp;3 DSGVO), indem
+  Sie im Fußbereich der Website {settings} wählen und {decline} klicken. Ab dann
+  sendet Ihr Browser keine Daten mehr an Umami. Die Rechtmäßigkeit der bis zum
+  Widerruf erfolgten Verarbeitung bleibt davon unberührt.
+</p>
+<p>
+  Damit wir Sie nicht bei jedem Seitenaufruf erneut fragen, speichert die
+  Website Ihre Entscheidung im lokalen Speicher Ihres Browsers (Local Storage)
+  unter dem Eintrag {consentKey}: ob Sie zugestimmt oder abgelehnt haben und
+  wann. Der Eintrag wird weder an uns noch an Dritte übertragen und bleibt
+  gespeichert, bis Sie Ihre Entscheidung ändern oder die gespeicherten Daten
+  dieser Website in Ihrem Browser löschen. Ist der lokale Speicher nicht
+  verfügbar, gilt Ihre Entscheidung nur für die gerade geöffnete Seite. Diese
+  Speicherung ist unbedingt erforderlich, damit die Website Ihre Entscheidung
+  beachten kann, und deshalb nach §&nbsp;25 Abs.&nbsp;2 Nr.&nbsp;2 TDDDG ohne
+  Einwilligung zulässig. Soweit dabei personenbezogene Daten verarbeitet werden,
+  ist Rechtsgrundlage Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO; unser
+  berechtigtes Interesse liegt darin, Ihre Entscheidung zu beachten, ohne Sie
+  wiederholt zu fragen.
+</p>
+<p>
+  Umami verarbeitet die Daten in unserem Auftrag auf Grundlage eines
+  Auftragsverarbeitungsvertrags (Art.&nbsp;28 DSGVO). Wir haben für unser Konto
+  die EU-Datenregion gewählt; die Statistikdaten werden daher in der EU
+  gespeichert. Umami Software, Inc. hat seinen Sitz jedoch in den USA und setzt
+  auch Unterauftragsverarbeiter in den USA ein, sodass Übermittlungen in die USA
+  nicht ausgeschlossen sind. Sie erfolgen auf Grundlage der
+  EU-Standardvertragsklauseln (Art.&nbsp;46 Abs.&nbsp;2 lit.&nbsp;c DSGVO), die
+  Teil des Auftragsverarbeitungsvertrags sind.
+</p>
+<p>
+  Die Statistikdaten werden nach {retention} gelöscht. Unabhängig von Ihrer
+  Entscheidung im Banner können Sie die Messung auch technisch verhindern, indem
+  Sie Skripte von cloud.umami.is mit einem Inhaltsblocker blockieren oder
+  JavaScript deaktivieren. Weitere Informationen finden Sie in der
+  <a href={umamiPrivacy}>Datenschutzerklärung von Umami</a>.
+</p>
+
+<h2>5. „Want“-Markierungen in Ihrem Browser</h2>
+<p>
+  Wenn Sie bei einem Entwurf auf „Want“ klicken, speichert die Website die Liste
+  der von Ihnen markierten Entwürfe im lokalen Speicher Ihres Browsers (Local
+  Storage). So bleiben Ihre Markierungen erhalten, wenn Sie zwischen den Seiten
+  wechseln oder die Website später erneut besuchen. Die Liste enthält keine
+  Kennung, die Sie identifiziert, und wird weder an uns noch an Dritte
+  übertragen. Haben Sie in die Besucherstatistik eingewilligt, wird der Klick
+  selbst zusätzlich dort erfasst (siehe Abschnitt&nbsp;4).
+</p>
+<p>
+  Sie können eine Markierung durch erneutes Klicken wieder entfernen oder alle
+  gespeicherten Daten dieser Website in den Einstellungen Ihres Browsers
+  löschen. Andernfalls bleibt die Liste gespeichert, bis Sie sie löschen.
+</p>
+<p>
+  Die Speicherung erfolgt erst, wenn Sie die Funktion nutzen, und dient allein
+  dazu, Ihnen die von Ihnen gewünschte Merkfunktion bereitzustellen. Sie ist
+  dafür unbedingt erforderlich und deshalb nach §&nbsp;25 Abs.&nbsp;2 Nr.&nbsp;2
+  TDDDG ohne Einwilligung zulässig. Soweit dabei personenbezogene Daten
+  verarbeitet werden, ist Rechtsgrundlage Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f
+  DSGVO; unser berechtigtes Interesse liegt darin, Ihnen die Merkfunktion
+  anzubieten.
+</p>
+
+<h2>6. Kontakt per E-Mail</h2>
+<p>
+  Wenn Sie uns eine E-Mail schreiben, verarbeiten wir Ihre E-Mail-Adresse, den
+  Inhalt Ihrer Nachricht und die übrigen Angaben, die Sie uns mitteilen, um Ihre
+  Anfrage zu beantworten. Rechtsgrundlage ist Art.&nbsp;6 Abs.&nbsp;1
+  lit.&nbsp;f DSGVO; unser berechtigtes Interesse liegt in der Beantwortung
+  Ihrer Anfrage. Die Nachricht wird dabei bei unserem E-Mail-Anbieter
+  gespeichert. Wir löschen sie, sobald Ihre Anfrage erledigt ist und keine
+  gesetzlichen Aufbewahrungspflichten entgegenstehen.
+</p>
+
+<h2>7. Link zu Instagram</h2>
+<p>
+  Im Fußbereich der Website verlinken wir auf ein Instagram-Profil. Es handelt
+  sich um einen einfachen Link: Beim Besuch unserer Website werden keine Daten
+  an Instagram übertragen. Erst wenn Sie dem Link folgen, gelangen Sie zu
+  Instagram, betrieben von Meta Platforms Ireland Limited; dort gilt deren
+  Datenschutzerklärung.
+</p>
+
+<h2>8. Schriftarten</h2>
+<p>
+  Die Schriftarten dieser Website werden zusammen mit der Website ausgeliefert.
+  Eine Verbindung zu externen Schriftdiensten wie Google Fonts besteht nicht.
+</p>
+
+<h2>9. Ihre Rechte</h2>
+<p>
+  Sie haben nach der DSGVO folgende Rechte bezüglich der Sie betreffenden
+  personenbezogenen Daten:
+</p>
+<ul>
+  <li>Auskunft (Art.&nbsp;15 DSGVO),</li>
+  <li>Berichtigung (Art.&nbsp;16 DSGVO),</li>
+  <li>Löschung (Art.&nbsp;17 DSGVO),</li>
+  <li>Einschränkung der Verarbeitung (Art.&nbsp;18 DSGVO),</li>
+  <li>Datenübertragbarkeit (Art.&nbsp;20 DSGVO),</li>
+  <li>Widerspruch gegen die Verarbeitung (Art.&nbsp;21 DSGVO, siehe unten),</li>
+  <li>
+    Widerruf einer erteilten Einwilligung mit Wirkung für die Zukunft
+    (Art.&nbsp;7 Abs.&nbsp;3 DSGVO); für die Besucherstatistik jederzeit über
+    {settings} im Fußbereich der Website.
+  </li>
+</ul>
+<p>
+  Wenden Sie sich dazu formlos per E-Mail an
+  <a href={mailto}>{OPERATOR.email}</a>.
+</p>
+<p>
+  Die Statistikdaten und Ihre im Browser gespeicherte Entscheidung
+  (Abschnitt&nbsp;4) sowie die Markierungen in Ihrem Browser (Abschnitt&nbsp;5)
+  enthalten keine Angaben, mit denen wir Sie identifizieren können. Anfragen zu
+  diesen Daten können wir deshalb in der Regel keiner Person zuordnen
+  (Art.&nbsp;11 DSGVO).
+</p>
+
+<h3>Widerspruchsrecht nach Art.&nbsp;21 DSGVO</h3>
+<p>
+  Soweit wir Daten auf Grundlage von Art.&nbsp;6 Abs.&nbsp;1 lit.&nbsp;f DSGVO
+  verarbeiten, haben Sie das Recht, aus Gründen, die sich aus Ihrer besonderen
+  Situation ergeben, jederzeit Widerspruch gegen diese Verarbeitung einzulegen.
+  Wir verarbeiten die Daten dann nicht mehr, es sei denn, wir können zwingende
+  schutzwürdige Gründe für die Verarbeitung nachweisen, die Ihre Interessen,
+  Rechte und Freiheiten überwiegen, oder die Verarbeitung dient der
+  Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen.
+</p>
+
+<h3>Beschwerderecht</h3>
+<p>
+  Sie haben das Recht, sich bei einer Datenschutz-Aufsichtsbehörde zu beschweren
+  (Art.&nbsp;77 DSGVO), insbesondere in dem Mitgliedstaat Ihres Aufenthaltsorts,
+  Ihres Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes. Für uns
+  zuständig ist: <a href={authority.url}>{authority.name}</a>.
+</p>
+
+<h2>10. Weitere Hinweise</h2>
+<p>
+  Sie sind nicht verpflichtet, uns personenbezogene Daten bereitzustellen. Ohne
+  die beim Abruf technisch übertragenen Daten (Abschnitt&nbsp;3) kann die
+  Website jedoch nicht ausgeliefert werden. Eine automatisierte
+  Entscheidungsfindung einschließlich Profiling (Art.&nbsp;22 DSGVO) findet
+  nicht statt.
+</p>
+<p>
+  Wir passen diese Datenschutzerklärung an, wenn sich die Website oder die
+  Rechtslage ändert. Es gilt die jeweils hier veröffentlichte Fassung.
+</p>

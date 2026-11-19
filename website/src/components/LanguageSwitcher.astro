@@ -1,0 +1,71 @@
+---
+/**
+ * EN / DE / RU / FR / TT. Each link goes to the same page in that locale (or
+ * to that locale's home when the page has no version there). The current
+ * locale is marked with aria-current.
+ */
+import { LOCALE_META, type Locale } from '../i18n/locales.ts';
+import { localeLinks } from '../i18n/paths.ts';
+import { useTranslations } from '../i18n/ui.ts';
+
+interface Props {
+  locale: Locale;
+  /** Locale-neutral path of the current page. */
+  path: string;
+  availableLocales?: readonly Locale[] | undefined;
+}
+
+const { locale, path, availableLocales } = Astro.props;
+const t = useTranslations(locale);
+const links = localeLinks(path, availableLocales);
+---
+
+<ul class="switcher" aria-label={t('header.languageLabel')}>
+  {links.map((link, index) => {
+    const meta = LOCALE_META[link.locale];
+    const current = link.locale === locale;
+    return (
+      <li>
+        {index > 0 && (
+          <span class="separator" aria-hidden="true">
+            /
+          </span>
+        )}
+        <a
+          href={link.href}
+          hreflang={meta.htmlLang}
+          lang={meta.htmlLang}
+          aria-current={current ? 'true' : undefined}
+        >
+          {meta.label}
+          <span class="visually-hidden">{`, ${meta.nativeName}`}</span>
+        </a>
+      </li>
+    );
+  })}
+</ul>
+
+<style>
+  .switcher {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .separator {
+    padding: 0 0.35em;
+  }
+  a[aria-current] {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

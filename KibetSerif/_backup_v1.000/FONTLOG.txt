@@ -1,0 +1,31 @@
+FONTLOG for Kibet Serif
+=======================
+
+Kibet Serif is the brand typeface of Kibet (Berlin). It is a modified
+version of PT Serif 1.000W by ParaType Ltd., released under the
+SIL Open Font License 1.1. As required by the license, the modified
+fonts do not use the Reserved Font Names "PT Sans", "PT Serif" or
+"ParaType".
+
+ChangeLog
+
+2026-11-16 (Kibet) Kibet Serif / Kibet Serif Display 1.000
+  - Renamed families to "Kibet Serif" and "Kibet Serif Display".
+  - Redrawn asterisk (U+002A): the "Kibet star", an eight-petal rosette
+    referencing Tatar floral ornament; weight-matched for Regular/Bold,
+    slanted for the italics.
+  - Kibet Serif Display (Regular, Bold): spacing tightened by 22 units
+    per glyph (UPM 1000) for headlines and garment prints.
+  - Removed hdmx/LTSH/VDMX tables (recomputed by renderers).
+
+2026-11-16 (Kibet) Kibet Serif Light / Kibet Serif Display Light 1.000
+  - New Light weight (usWeightClass 300) derived from the Regular
+    outlines: contours offset inward by 12 units (UPM 1000), cap height,
+    x-height, ascender and descender restored to the Regular values.
+  - Advance widths reduced by 12 units per glyph to keep word images
+    compact.
+  - Curves converted to fine polylines; TrueType hinting removed.
+
+Acknowledgements
+  - PT Serif: ParaType Ltd., designers Alexandra Korolkova, Olga Umpeleva,
+    Vladimir Yefimov (Public Types of Russian Federation project).
